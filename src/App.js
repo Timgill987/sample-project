@@ -1,57 +1,40 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import axios from "axios";
 
-function App() {
-  const [date, setDate] = useState(null);
+import SWChars from "./component";
+const App = () => {
+  const [starWarsStuff, setStarWarsStuff] = useState([]);
   useEffect(() => {
-    async function getDate() {
-      const res = await fetch('/api/date');
-      const newDate = await res.text();
-      setDate(newDate);
-    }
-    getDate();
+    axios
+      .get(`https://swapi.co/api/people`)
+      .then(response => {
+        console.log(response.data.results);
+        setStarWarsStuff(response.data.results);
+      })
+      .catch(error => {
+        console.log("the data was not return", error);
+      });
   }, []);
   return (
-    <main>
-      <h1>Create React App + Go API</h1>
-      <h2>
-        Deployed with{' '}
-        <a
-          href="https://zeit.co/docs"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          ZEIT Now
-        </a>
-        !
-      </h2>
-      <p>
-        <a
-          href="https://github.com/zeit/now/tree/master/examples/create-react-app"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          This project
-        </a>{' '}
-        was bootstrapped with{' '}
-        <a href="https://facebook.github.io/create-react-app/">
-          Create React App
-        </a>{' '}
-        and contains three directories, <code>/public</code> for static assets,{' '}
-        <code>/src</code> for components and content, and <code>/api</code>{' '}
-        which contains a serverless <a href="https://golang.org/">Go</a>{' '}
-        function. See{' '}
-        <a href="/api/date">
-          <code>api/date</code> for the Date API with Go
-        </a>
-        .
-      </p>
-      <br />
-      <h2>The date according to Go is:</h2>
-      <p>{date ? date : 'Loading date...'}</p>
-    </main>
+    <div className="App">
+      <h1 className="Header">React Wars</h1>
+      {starWarsStuff.map(item => (
+        <SWChars
+          key = {item}
+          name={item.name}
+          gender={item.gender}
+          birth_year={item.birth_year}
+        />
+      ))}
+    </div>
   );
-}
+};
 
 export default App;
+// Try to think through what state you'll need for this app before starting. Then build out
+// the state properties here.
+
+// Fetch characters from the star wars api in an effect hook. Remember, anytime you have a
+// side effect in a component, you want to think about which state and/or props it should
+// sync up with, if any.
